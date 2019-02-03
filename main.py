@@ -76,10 +76,10 @@ def train(trainloader, model, criterion, optimizer, epoch):
     return loss_avg
 
 
-def eval(valloader, model, criterion, save_image):
+def evaluate(valloader, model, criterion, save_image):
 
-    # switch the model to eval mode ( important for dropout layers or batchnorm layers )
-    model.eval()
+    # switch the model to evaluate mode ( important for dropout layers or batchnorm layers )
+    model.evaluate()
     loss_sum = 0
     for i, data in enumerate(valloader):
         # get train and label data
@@ -241,28 +241,28 @@ optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, we
 # load the ISBI 2012 training data
 # the CTC2015 Datasetloader is not finished yet
 # The length of the Dataset has to be set by yourself
-# gloob_dir_train, gloob_dir_label, length, is_pad, eval, totensor):
+# gloob_dir_train, gloob_dir_label, length, is_pad, evaluate, totensor):
 if args.data == "ISBI2012":
     trainset = ISBI.ISBIDataset(
         "./ISBI 2012/Train-Volume/train-volume-*.tif", "./ISBI 2012/Train-Labels/train-labels-*.tif",
-        length=720, is_pad=args.pad, eval=False, totensor=True)
+        length=720, is_pad=args.pad, evaluate=False, totensor=True)
 
     if not args.evaluate:
         valset = ISBI.ISBIDataset(
             "./ISBI 2012/Val-Volume/train-volume-*.tif", "./ISBI 2012/Val-Labels/train-labels-*.tif",
-            length=10, is_pad=args.pad, eval=True, totensor=True)
+            length=10, is_pad=args.pad, evaluate=True, totensor=True)
     else:
         valset = ISBI.ISBIDataset(
             "./ISBI 2012/Test-Volume/test-volume-*.tif", "./ISBI 2012/Test-Volume/test-volume-*.tif",
-            length=30, is_pad=args.pad, eval=True, totensor=True)
+            length=30, is_pad=args.pad, evaluate=True, totensor=True)
 elif args.data == "CTC2015":
     trainset = ISBI.ISBIDataset(
         "./ISBI 2012/Train-Volume/train-volume-*.tif", "./ISBI 2012/Train-Labels/train-labels-*.tif",
-        length=24, is_pad=args.pad, eval=False, totensor=True)
+        length=24, is_pad=args.pad, evaluate=False, totensor=True)
 
     valset = ISBI.ISBIDataset(
         "./ISBI 2012/Test-Volume/test-volume-*.tif", "./ISBI 2012/Test-Volume/test-volume-*.tif",
-        length=30, is_pad=args.pad, eval=True, totensor=True)
+        length=30, is_pad=args.pad, evaluate=True, totensor=True)
 
 # num of workers can represent the number of cores in cpu, pinned memory is page-locked memory
 # disable it  if system freezes, or swap is used a lot
@@ -320,7 +320,7 @@ if args.txt and not args.evaluate:
         myfile.close()
 
 if args.evaluate:
-    print " avg loss: " + str(eval(valloader, model, criterion, True))
+    print " avg loss: " + str(evaluate(valloader, model, criterion, True))
 else:
     print "***** Start Training *****"
     # val loss and train loss are initialized with 0
@@ -328,7 +328,7 @@ else:
         start_time = time.time()
 
         train_loss.append(train(trainloader, model, criterion, optimizer, epoch))
-        val_loss.append(eval(valloader, model, criterion, False))
+        val_loss.append(evaluate(valloader, model, criterion, False))
         end_time = time.time()
 
         print('Epoch [%5d] train_loss: %.4f val_loss: %.4f loop time: %.5f' %

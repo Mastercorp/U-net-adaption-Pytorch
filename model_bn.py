@@ -185,6 +185,7 @@ class Unet(nn.Module):
 
     # when no padding is used, the upsampled image gets smaller
     # to copy a bigger image to the corresponding layer, it needs to be cropped
+    @classmethod
     def crop_and_concat(self, upsampled, bypass):
         # Python 2 / Integer division ( if int intputs ), // integer division
         c = (bypass.size()[2] - upsampled.size()[2]) // 2

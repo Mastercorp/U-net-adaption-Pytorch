@@ -10,14 +10,14 @@ import datetime
 
 class ISBIDataset(data.Dataset):
 
-    def __init__(self, gloob_dir_train, gloob_dir_label, length, is_pad, eval, totensor):
+    def __init__(self, gloob_dir_train, gloob_dir_label, length, is_pad, evaluate, totensor):
         self.gloob_dir_train = gloob_dir_train
         self.gloob_dir_label = gloob_dir_label
         self.length = length
         self.crop = torchvision.transforms.CenterCrop(512)
         self.crop_nopad = torchvision.transforms.CenterCrop(324)
         self.is_pad = is_pad
-        self.eval = eval
+        self.evaluate = evaluate
         self.totensor = totensor
         self.changetotensor = torchvision.transforms.ToTensor()
 
@@ -49,7 +49,7 @@ class ISBIDataset(data.Dataset):
         trainlabel = Image.open(self.labelfiles[index]).convert("L")
 
 
-        if not self.eval:
+        if not self.evaluate:
 
             sigma = random.randint(70, 100)
 
