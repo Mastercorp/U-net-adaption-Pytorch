@@ -1,0 +1,3 @@
+convert 001.tif 002.tif 003.tif 004.tif 005.tif 006.tif 007.tif 008.tif 009.tif 010.tif 011.tif 012.tif 013.tif 014.tif 015.tif 016.tif 017.tif 018.tif 019.tif 020.tif 021.tif 022.tif 023.tif 024.tif 025.tif 026.tif 027.tif 028.tif 029.tif 030.tif imgs.tif
+
+
