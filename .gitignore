@@ -70,4 +70,10 @@ fabric.properties
 
 DIC-C2DH-HeLa/
 PhC-C2DH-U373/
+val/
+eval/
+DIC-C2DH-HeLa-challenge/
+PhC-C2DH-U373-challenge/
+models/
+*.tar
 .idea/

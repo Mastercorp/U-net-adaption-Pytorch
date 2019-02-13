@@ -1,7 +1,8 @@
 import model
 import model_bn
 import torch.utils.data.dataloader as dl
-import ISBI2012Data as ISBI
+#import ISBI2012Data as ISBI
+import ISBIHELAData as ISBI
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -56,6 +57,7 @@ def train(trainloader, model, criterion, optimizer, epoch):
         outputs = model(train, padding=args.pad)
         # the log is needed to calculate the crossentropy
         loss = criterion(torch.log(outputs), label)
+
         loss.backward()
 
         optimizer.step()
@@ -79,7 +81,7 @@ def train(trainloader, model, criterion, optimizer, epoch):
 def evaluate(valloader, model, criterion, save_image):
 
     # switch the model to evaluate mode ( important for dropout layers or batchnorm layers )
-    model.evaluate()
+    model.eval()
     loss_sum = 0
     for i, data in enumerate(valloader):
         # get train and label data
@@ -87,7 +89,6 @@ def evaluate(valloader, model, criterion, save_image):
         # put on gpu or cpu
         val = val.to(device)
         # label is of type TensorLong
-
 
         label = label.to(device)
 
@@ -163,7 +164,7 @@ parser.add_argument('-mbs', '--mini-batch-size', dest='minibatchsize', type=int,
 parser.add_argument('-j', '--workers', default=3, type=int, metavar='N',
                     help='number of data loading workers (default: 2)')
 parser.add_argument('--epochs', default=20, type=int, metavar='N',
-                    help='number of total epochs to run (default: 20)')
+                    help='Number of epoch to run to (default: 20)')
 parser.add_argument('-lr', default=0.001, type=float,
                     metavar='LR', help='initial learning rate (default: 0.001)')
 parser.add_argument('--momentum', default=0.99, type=float, metavar='M',
@@ -200,7 +201,7 @@ torch.backends.cudnn.deterministic = True
 # torch.manual_seed(999)
 # random.seed(999)
 
-print "***** Starting Programm *****"
+print ("***** Starting Programm *****")
 
 
 # 1: design model
@@ -231,7 +232,7 @@ if device.type == "cuda":
 # If you want to use the CrossEntropyLoss(), remove the softmax layer, and  the torch.log() at the loss
 
 # criterion = nn.CrossEntropyLoss().to(device)
-criterion = nn.NLLLoss(weight=torch.tensor([0.75, 0.25])).to(device)
+criterion = nn.NLLLoss(weight=torch.tensor([10.0, 1.0])).to(device)
 #criterion = nn.NLLLoss().to(device)
 optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
 
@@ -244,17 +245,17 @@ optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum, we
 # gloob_dir_train, gloob_dir_label, length, is_pad, evaluate, totensor):
 if args.data == "ISBI2012":
     trainset = ISBI.ISBIDataset(
-        "./ISBI 2012/Train-Volume/train-volume-*.tif", "./ISBI 2012/Train-Labels/train-labels-*.tif",
-        length=720, is_pad=args.pad, evaluate=False, totensor=True)
+        "DIC-C2DH-HeLa/trainrot/t*.tif", "DIC-C2DH-HeLa/labeledgerot/man_seg*.tif",
+        length=576, is_pad=args.pad, evaluate=False, totensor=True)
 
     if not args.evaluate:
         valset = ISBI.ISBIDataset(
-            "./ISBI 2012/Val-Volume/train-volume-*.tif", "./ISBI 2012/Val-Labels/train-labels-*.tif",
-            length=10, is_pad=args.pad, evaluate=True, totensor=True)
+             "DIC-C2DH-HeLa/valtrain/t*.tif", "DIC-C2DH-HeLa/vallabeledge/man_seg*.tif",
+            length=2, is_pad=args.pad, evaluate=True, totensor=True)
     else:
         valset = ISBI.ISBIDataset(
-            "./ISBI 2012/Test-Volume/test-volume-*.tif", "./ISBI 2012/Test-Volume/test-volume-*.tif",
-            length=30, is_pad=args.pad, evaluate=True, totensor=True)
+            "DIC-C2DH-HeLa/valtrain/t*.tif", "DIC-C2DH-HeLa/vallabeledge/man_seg*.tif",
+            length=2, is_pad=args.pad, evaluate=True, totensor=True)
 elif args.data == "CTC2015":
     trainset = ISBI.ISBIDataset(
         "./ISBI 2012/Train-Volume/train-volume-*.tif", "./ISBI 2012/Train-Labels/train-labels-*.tif",
@@ -292,13 +293,13 @@ if args.resume:
         print("=> no checkpoint found at '{}'".format(args.resume))
 
 # print some info for console
-print'Dataset      : ' + str(args.data)
-print'Start Epoch  : ' + str(args.start_epoch)
-print'End Epoch    : ' + str(args.epochs)
-print'Learning rate: ' + str(args.lr)
-print'Momentum     : ' + str(args.momentum)
-print'Weight decay : ' + str(args.weight_decay)
-print'Use padding  : ' + str(args.pad)
+print ('Dataset      : ' + str(args.data))
+print ('Start Epoch  : ' + str(args.start_epoch))
+print ('End Epoch    : ' + str(args.epochs))
+print ('Learning rate: ' + str(args.lr))
+print ('Momentum     : ' + str(args.momentum))
+print ('Weight decay : ' + str(args.weight_decay))
+print ('Use padding  : ' + str(args.pad))
 
 #  save a txt file with the console info
 if args.txt and not args.evaluate:
@@ -320,9 +321,9 @@ if args.txt and not args.evaluate:
         myfile.close()
 
 if args.evaluate:
-    print " avg loss: " + str(evaluate(valloader, model, criterion, True))
+    print (" avg loss: " + str(evaluate(valloader, model, criterion, True)))
 else:
-    print "***** Start Training *****"
+    print ("***** Start Training *****")
     # val loss and train loss are initialized with 0
     for epoch in range(args.start_epoch, args.epochs):
         start_time = time.time()
@@ -387,7 +388,7 @@ if not args.evaluate:
                     'val_loss': val_loss,
                     'optimizer': optimizer.state_dict(),
                 }, is_best_loss, filename='checkpoint.' + str(args.lr) + "wd" + str(args.weight_decay) + '.pth.tar')
-    print "*****   End  Programm   *****"
+    print ("*****   End  Programm   *****")
 
 
 

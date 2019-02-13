@@ -28,43 +28,24 @@ def rotate_img(img, angle, label):
     return Image.fromarray(imgaug)
 
 
-directory = './ISBI 2012/Train-Volume/'
-if not os.path.exists(directory):
-    os.makedirs(directory)
-
-directory = './ISBI 2012/Val-Volume/'
-if not os.path.exists(directory):
-    os.makedirs(directory)
-
-directory = './ISBI 2012/Train-Labels/'
-if not os.path.exists(directory):
-    os.makedirs(directory)
-
-directory = './ISBI 2012/Val-Labels/'
-if not os.path.exists(directory):
-    os.makedirs(directory)
 
 
-imgvolume = Image.open('./train-volume.tif')
-imglabel = Image.open('./train-labels.tif')
+
+imgvolume = Image.open('./DIC-C2DH-HeLa/trainrot.tif')
+imglabel = Image.open('.//DIC-C2DH-HeLa/lableedgerot.tif')
 
 imgindex = 0
 
 trans = False
-rot = False
+rot = True
 flip = False
-for i in range(30):
+for i in range(16):
     try:
         imgvolume.seek(i)
         imglabel.seek(i)
 
-        if i % 3 == 0:
-            imgvolume.save('./ISBI 2012/Val-Volume/train-volume-%s.tif' % (imgindex,))
-            imglabel.save('./ISBI 2012/Val-Labels/train-labels-%s.tif' % (imgindex,))
-
-        else:
-            imgvolume.save('./ISBI 2012/Train-Volume/train-volume-%s.tif' % (imgindex,))
-            imglabel.save('./ISBI 2012/Train-Labels/train-labels-%s.tif' % (imgindex,))
+        imgvolume.save('./DIC-C2DH-HeLa/trainrot/t%s.tif' % (imgindex,))
+        imglabel.save('./DIC-C2DH-HeLa/labeledgerot/man_seg%s.tif' % (imgindex,))
 
         imgindex = imgindex + 1
 
@@ -72,15 +53,9 @@ for i in range(30):
             # use 10  steps ( 36 )
             for z in range(1, 36):
                 angle = 360.0 / 36 * z
-                if i % 3 == 0:
-                    continue
-                    # rotate_img(imgvolume, angle, False).save('./ISBI 2012/Val-Volume/train-volume-%s.tif' % (imgindex,))
-                    # rotate_img(imglabel, angle, True).save('./ISBI 2012/Val-Labels/train-labels-%s.tif' % (imgindex,))
 
-
-                else:
-                    rotate_img(imgvolume, angle, False).save('./ISBI 2012/Train-Volume/train-volume-%s.tif' % (imgindex,))
-                    rotate_img(imglabel, angle, True).save('./ISBI 2012/Train-Labels/train-labels-%s.tif' % (imgindex,))
+                rotate_img(imgvolume, angle, False).save('./DIC-C2DH-HeLa/trainrot/t%s.tif' % (imgindex,))
+                rotate_img(imglabel, angle, True).save('./DIC-C2DH-HeLa/labeledgerot/man_seg%s.tif' % (imgindex,))
 
                 imgindex = imgindex + 1
 
@@ -110,14 +85,14 @@ for i in range(30):
     except EOFError:
         break
 
-
-img = Image.open('./test-volume.tif')
-directory = './ISBI 2012/Test-Volume/'
-if not os.path.exists(directory):
-    os.makedirs(directory)
-for i in range(30):
-    try:
-        img.seek(i)
-        img.save('./ISBI 2012/Test-Volume/test-volume-%s.tif' % (i,))
-    except EOFError:
-        break
+#
+# img = Image.open('./test-volume.tif')
+# directory = './ISBI 2012/Test-Volume/'
+# if not os.path.exists(directory):
+#     os.makedirs(directory)
+# for i in range(30):
+#     try:
+#         img.seek(i)
+#         img.save('./ISBI 2012/Test-Volume/test-volume-%s.tif' % (i,))
+#     except EOFError:
+#         break

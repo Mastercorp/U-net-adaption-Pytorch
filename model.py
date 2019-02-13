@@ -78,7 +78,7 @@ class Unet(nn.Module):
                 # xavier would be: scalefactor * sqrt(2/ (inchannels + outchannels )
                 std = math.sqrt(2.0/(m.kernel_size[0]*m.kernel_size[0]*m.in_channels))
                 nn.init.normal_(m.weight, std=std)
-                #nn.init.xavier_normal_(m.weight)
+               # nn.init.xavier_normal_(m.weight)
                 nn.init.constant_(m.bias, 0)
             # elif isinstance(m, nn.BatchNorm2d):
             #     print
